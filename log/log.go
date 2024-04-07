@@ -28,6 +28,9 @@ var (
 		MaxAge:        365,
 	}
 
+	// CommonLogOpt use to easliy construct custom log options
+	CommonLogOpt = defaultLogOpt
+
 	logJsonEncodeCfg = zapcore.EncoderConfig{
 		MessageKey:   "msg",                          // default msg key
 		LevelKey:     "level",                        // log level key
@@ -138,6 +141,32 @@ func (opt LoggerOpt) CreateDirectory() error {
 	}
 	err := os.MkdirAll(opt.Directory, os.ModePerm)
 	return err
+}
+
+// WithDirectory setting log file directory
+func (opt LoggerOpt) WithDirectory(path string) LoggerOpt {
+	opt.Directory = path
+	return opt
+}
+
+// WithTraceIDEnable setting traceid
+func (opt LoggerOpt) WithTraceIDEnable(enable bool) LoggerOpt {
+	opt.TraceIDEnable = enable
+	return opt
+}
+
+// WithLogRetention sets log retention
+func (opt LoggerOpt) WithLogRetention(maxSize int, maxBackups int, maxAge int) LoggerOpt {
+	opt.MaxAge = maxAge
+	opt.MaxBackups = maxBackups
+	opt.MaxSize = maxSize
+	return opt
+}
+
+// WithLogLevel sets log level
+func (opt LoggerOpt) WithLogLevel(level zapcore.Level) LoggerOpt {
+	opt.LogLevel = level
+	return opt
 }
 
 // Debug the msg

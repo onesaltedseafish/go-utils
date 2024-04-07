@@ -14,15 +14,8 @@ import (
 )
 
 var (
-	ctx = context.Background()
-	logOpt = log.LoggerOpt{
-		LogLevel:      zapcore.InfoLevel,
-		Directory:     "/tmp/1234",
-		TraceIDEnable: true,
-		MaxSize:       10,
-		MaxBackups:    10,
-		MaxAge:        1,
-	}
+	ctx    = context.Background()
+	logOpt = log.CommonLogOpt.WithDirectory("/tmp/gorm").WithLogLevel(zapcore.DebugLevel)
 )
 
 // User 结构体

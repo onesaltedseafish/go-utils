@@ -64,8 +64,8 @@ func newZapLogger(opt *LoggerOpt) *zap.Logger {
 		MaxAge:     opt.MaxAge,
 	})
 
-	jsonCore := zapcore.NewCore(zapcore.NewJSONEncoder(logJsonEncodeCfg), w, opt.LogLevel)
-	consoleCore := zapcore.NewCore(zapcore.NewConsoleEncoder(logConsoleEncodeCfg), zapcore.Lock(os.Stdout), opt.LogLevel)
+	jsonCore := zapcore.NewCore(zapcore.NewJSONEncoder(logJsonEncodeCfg), w, zap.DebugLevel)
+	consoleCore := zapcore.NewCore(zapcore.NewConsoleEncoder(logConsoleEncodeCfg), zapcore.Lock(os.Stdout), zap.DebugLevel)
 
 	return zap.New(
 		zapcore.NewTee(
@@ -177,4 +177,9 @@ func (l *Logger) log(
 	// add remaining fields
 	dst = append(dst, fields...)
 	logFunc(msg, dst...)
+}
+
+// SetLevel setting log level
+func (l *Logger) SetLevel(level zapcore.Level) {
+	l.opt.LogLevel = level
 }

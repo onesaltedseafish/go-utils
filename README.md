@@ -9,6 +9,9 @@ Utils for golang
 - Shell 包装好的方便调用的系统命令
     - 简单好用
     - 支持传递`context.Context`进行控制
+- Reader 包装好的读取各种格式的文件
+    - csv 文件
+    - txt (以`\t`为分隔符)
 
 ## linters
 

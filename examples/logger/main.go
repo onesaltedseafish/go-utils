@@ -14,14 +14,7 @@ var (
 )
 
 var (
-	logOpt = log.LoggerOpt{
-		LogLevel:      zapcore.DebugLevel,
-		Directory:     "/tmp/1234",
-		TraceIDEnable: true,
-		MaxSize:       10,
-		MaxBackups:    10,
-		MaxAge:        1,
-	}
+	logOpt = log.CommonLogOpt.WithDirectory("/tmp/1234").WithTraceIDEnable(false).WithLogLevel(zapcore.DebugLevel)
 )
 
 func main() {

@@ -12,6 +12,8 @@ Utils for golang
 - Reader 包装好的读取各种格式的文件
     - csv 文件
     - txt (以`\t`为分隔符)
+- Writer 包装好的写各种格式的文件
+    - csv 文件
 
 ## linters
 

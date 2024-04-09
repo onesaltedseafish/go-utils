@@ -26,3 +26,6 @@ go.work
 # sqlite
 *.db
 *.sqlite
+
+# tests
+test.csv

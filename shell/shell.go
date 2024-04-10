@@ -30,7 +30,11 @@ func Run(command string, envs []string) ([]byte, error) {
 	// run command
 	err := cmd.Run()
 
-	err = errors.Join(err, errors.New(string(stderr.Bytes())))
+	stderrContent := string(stderr.Bytes())
+	if stderrContent != "" {
+		err = errors.Join(err, errors.New(stderrContent))
+	}
+
 	out := stdout.Bytes()
 
 	return out, err

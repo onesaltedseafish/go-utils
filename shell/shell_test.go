@@ -10,6 +10,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// get err string
+// return "" for nil err
+func getErrString(err error) string{
+	if err == nil{
+		return ""
+	}
+	return err.Error()
+}
+
 func TestValidateEnv(t *testing.T) {
 	testcases := []struct {
 		Target     string
@@ -84,7 +93,19 @@ func TestRun(t *testing.T) {
 	for _, testcase := range testcases {
 		output, err := Run(testcase.Command, nil)
 		assert.Equal(t, testcase.WantOutput, string(output))
-		assert.Equal(t, testcase.WantErrString, err.Error())
+		assert.Equal(t, testcase.WantErrString, getErrString(err))
+	}
+}
+
+// finds shell.Run will return an empty error message error
+// so we need a specified test case
+func TestRunErr(t *testing.T) {
+	if runtime.GOOS != "linux" { // tests run only under linux
+		return
+	}
+	_, err := Run("echo 2", nil)
+	if err != nil {
+		t.Errorf("the command will always success, but got err: %v", err)
 	}
 }
 
@@ -109,6 +130,6 @@ func TestRunWithCtx(t *testing.T) {
 	for _, testcase := range testcases {
 		output, err := RunWithCtx(testcase.Ctx, testcase.Command, testcase.Envs)
 		assert.Equal(t, testcase.WantOutput, string(output))
-		assert.Equal(t, testcase.WantErrString, err.Error())
+		assert.Equal(t, testcase.WantErrString, getErrString(err))
 	}
 }

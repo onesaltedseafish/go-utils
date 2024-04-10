@@ -5,6 +5,7 @@ import (
 	"context"
 
 	"github.com/onesaltedseafish/go-utils/log"
+	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
@@ -20,10 +21,14 @@ var (
 func main() {
 	logger := log.GetLogger("example", &logOpt)
 
+	logger2 := log.NewFromLogger(logger).WithLoggerMetaFields(zap.String("version", "2"))
+
 	logger.Debug(ctx, "debug log")
 	logger.Info(ctx, "info log")
+	logger2.Info(ctx, "info log 2")
 	logger.Warn(ctx, "warn log")
 	logger.Error(ctx, "error log")
 
 	logger.Info(traceIDCtx, "info log with traceid")
+	logger.Fatal(ctx, "fatal log")
 }

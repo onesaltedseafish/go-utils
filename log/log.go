@@ -189,6 +189,11 @@ func (l *Logger) Error(ctx context.Context, msg string, fields ...zap.Field) {
 	l.log(ctx, zapcore.ErrorLevel, l.zaplog.Error, msg, fields...)
 }
 
+// Fatal the msg and exit with errcode 1
+func (l *Logger) Fatal(ctx context.Context, msg string, fields ...zap.Field) {
+	l.log(ctx, zapcore.FatalLevel, l.zaplog.Fatal, msg, fields...)
+}
+
 func (l *Logger) log(
 	ctx context.Context,
 	logLevel zapcore.Level,
@@ -211,4 +216,18 @@ func (l *Logger) log(
 // SetLevel setting log level
 func (l *Logger) SetLevel(level zapcore.Level) {
 	l.opt.LogLevel = level
+}
+
+// WithLoggerMetaFields set meta fields for logger
+func (l *Logger) WithLoggerMetaFields(fields ...zapcore.Field) *Logger {
+	l.zaplog = l.zaplog.With(fields...)
+	return l
+}
+
+// NewFromLogger new a logger from a logger
+func NewFromLogger(logger *Logger) *Logger {
+	return &Logger{
+		zaplog: logger.zaplog,
+		opt:    logger.opt,
+	}
 }

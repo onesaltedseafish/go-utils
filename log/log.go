@@ -14,8 +14,9 @@ import (
 )
 
 var (
-	loggers = make(map[string]*Logger, 0)
-	mu      sync.Mutex
+	defaultLogger *Logger
+	loggers       = make(map[string]*Logger, 0)
+	mu            sync.Mutex
 )
 
 var (
@@ -26,6 +27,7 @@ var (
 		MaxSize:       15,
 		MaxBackups:    5,
 		MaxAge:        365,
+		IsDefault:     true,
 	}
 
 	// CommonLogOpt use to easliy construct custom log options
@@ -86,10 +88,14 @@ func newLogger(name string, opt *LoggerOpt) *Logger {
 	}
 	logger.zaplog = newZapLogger(logger.opt)
 	logger.zaplog = logger.zaplog.With(zap.String("name", name))
+	if opt.IsDefault {
+		defaultLogger = logger
+	}
 	return logger
 }
 
-// GetLogger get logger or new a logger
+// GetLogger get logger with specified name
+// or new a logger with options
 func GetLogger(name string, opt *LoggerOpt) *Logger {
 	if opt == nil {
 		opt = &defaultLogOpt
@@ -103,6 +109,12 @@ func GetLogger(name string, opt *LoggerOpt) *Logger {
 	l = newLogger(name, opt)
 	loggers[name] = l
 	return l
+}
+
+// GetDefaultLogger get default logger
+// if no default logger was initilized ** nil ** will be return
+func GetDefaultLogger() *Logger {
+	return defaultLogger
 }
 
 // Logger self defined Logger
@@ -120,6 +132,7 @@ type LoggerOpt struct {
 	MaxSize       int    // Log File Max Size MB
 	MaxBackups    int    // The number of backup log file
 	MaxAge        int    // The days the log will be kept
+	IsDefault     bool   // is defalut logger?
 }
 
 // GetLogFilePath get log dst file path

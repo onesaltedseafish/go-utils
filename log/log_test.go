@@ -22,3 +22,9 @@ func TestLoggerOptGetFilePath(t *testing.T) {
 		assert.Equal(t, testcase.WantPath, testcase.Opt.GetLogFilePath())
 	}
 }
+
+func TestGetDefaultLogger(t *testing.T) {
+	assert.Equal(t, true, GetDefaultLogger() == nil)
+	logger := GetLogger("abc", &defaultLogOpt)
+	assert.Equal(t, logger, GetDefaultLogger())
+}

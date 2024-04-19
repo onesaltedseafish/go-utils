@@ -21,13 +21,14 @@ var (
 
 var (
 	defaultLogOpt = LoggerOpt{
-		LogLevel:      zapcore.InfoLevel,
-		Directory:     ".",
-		TraceIDEnable: true,
-		MaxSize:       15,
-		MaxBackups:    5,
-		MaxAge:        365,
-		IsDefault:     true,
+		LogLevel:         zapcore.InfoLevel,
+		Directory:        ".",
+		TraceIDEnable:    true,
+		MaxSize:          15,
+		MaxBackups:       5,
+		MaxAge:           365,
+		IsDefault:        true,
+		ConsoleLogEnable: true,
 	}
 
 	// CommonLogOpt use to easliy construct custom log options
@@ -69,13 +70,19 @@ func newZapLogger(opt *LoggerOpt) *zap.Logger {
 		MaxAge:     opt.MaxAge,
 	})
 
+	cores := make([]zapcore.Core, 0)
+
 	jsonCore := zapcore.NewCore(zapcore.NewJSONEncoder(logJsonEncodeCfg), w, zap.DebugLevel)
 	consoleCore := zapcore.NewCore(zapcore.NewConsoleEncoder(logConsoleEncodeCfg), zapcore.Lock(os.Stdout), zap.DebugLevel)
 
+	cores = append(cores, jsonCore)
+	if opt.ConsoleLogEnable {
+		cores = append(cores, consoleCore)
+	}
+
 	return zap.New(
 		zapcore.NewTee(
-			jsonCore,
-			consoleCore,
+			cores...,
 		),
 	)
 }
@@ -125,14 +132,15 @@ type Logger struct {
 
 // LoggerOpt configures the logger
 type LoggerOpt struct {
-	LogLevel      zapcore.Level
-	Directory     string // log file directory
-	Name          string // log file name
-	TraceIDEnable bool   // enable traceid field
-	MaxSize       int    // Log File Max Size MB
-	MaxBackups    int    // The number of backup log file
-	MaxAge        int    // The days the log will be kept
-	IsDefault     bool   // is defalut logger?
+	LogLevel         zapcore.Level
+	Directory        string // log file directory
+	Name             string // log file name
+	TraceIDEnable    bool   // enable traceid field
+	MaxSize          int    // Log File Max Size MB
+	MaxBackups       int    // The number of backup log file
+	MaxAge           int    // The days the log will be kept
+	IsDefault        bool   // is defalut logger?
+	ConsoleLogEnable bool   // enable console log?
 }
 
 // GetLogFilePath get log dst file path
@@ -179,6 +187,12 @@ func (opt LoggerOpt) WithLogRetention(maxSize int, maxBackups int, maxAge int) L
 // WithLogLevel sets log level
 func (opt LoggerOpt) WithLogLevel(level zapcore.Level) LoggerOpt {
 	opt.LogLevel = level
+	return opt
+}
+
+// WithConsoleLog enable console log
+func (opt LoggerOpt) WithConsoleLog(enable bool) LoggerOpt {
+	opt.ConsoleLogEnable = enable
 	return opt
 }
 

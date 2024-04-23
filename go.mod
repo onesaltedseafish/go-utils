@@ -3,6 +3,7 @@ module github.com/onesaltedseafish/go-utils
 go 1.22.0
 
 require (
+	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.6.0
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/stretchr/testify v1.8.1

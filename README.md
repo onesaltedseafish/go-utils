@@ -14,6 +14,8 @@ Utils for golang
     - txt (以`\t`为分隔符)
 - Writer 包装好的写各种格式的文件
     - csv 文件
+- Simulate 模拟的实现
+    - dhcp 模拟 DHCP 协议分布 IP 地址
 
 ## linters
 

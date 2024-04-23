@@ -7,6 +7,7 @@ import (
 	"errors"
 	"math/big"
 	"net"
+	"sync"
 )
 
 var (
@@ -33,9 +34,11 @@ type Storage interface {
 }
 
 // Client monitor how dhcp server work
+// concurrency safty
 type Client struct {
 	network net.IPNet // 分配的子网
 	storage Storage
+	mu      sync.Mutex
 }
 
 // New a dhcp client
@@ -49,6 +52,8 @@ func New(network net.IPNet, storage Storage) *Client {
 // AllocateAddress allocate an address for a MAC address
 // return an error if no addresses can be allocated
 func (cli *Client) AllocateAddress(hwAddr net.HardwareAddr) (net.IP, error) {
+	cli.mu.Lock()
+	defer cli.mu.Unlock()
 	// 1. Got a pre used address if possible
 	if ip := cli.storage.GetAddressWithMAC(hwAddr); ip != nil {
 		cli.storage.SetAddressWithMAC(ip, hwAddr)
@@ -82,6 +87,8 @@ func (cli *Client) AllocateAddress(hwAddr net.HardwareAddr) (net.IP, error) {
 
 // ReleaseAddress release the ip address
 func (cli *Client) ReleaseAddress(ip net.IP) error {
+	cli.mu.Lock()
+	defer cli.mu.Unlock()
 	return cli.storage.ReleaseAddress(ip)
 }
 

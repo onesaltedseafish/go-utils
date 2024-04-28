@@ -1,6 +1,13 @@
 # go-utils
 Utils for golang
 
+install:
+```bash
+go get -u github.com/onesaltedseafish/go-utils
+```
+
+The functions are listed below:
+
 - Log 开箱即用的 logger库，提供以下功能
     - 简单好用的 Console 日志输出
     - 简单好用的 Json 日志文件输出

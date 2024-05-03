@@ -48,30 +48,31 @@ func newTestStorageImpl(network net.IPNet) *testStorageImpl {
 // GetAddressWithMAC if storage has a record of hardwareAddr
 // then return the related ip address
 // else return nil
-func (s *testStorageImpl) GetAddressWithMAC(addr net.HardwareAddr) net.IP {
-	return net.ParseIP(s.m[addr.String()])
+func (s *testStorageImpl) GetAddressWithMAC(addr net.HardwareAddr) (net.IP, error) {
+	return net.ParseIP(s.m[addr.String()]), nil
 }
 
 // GetOneUnusedAddress finds the first unused record
-func (s *testStorageImpl) GetOneUnusedAddress() net.IP {
+func (s *testStorageImpl) GetOneUnusedAddress() (net.IP, error) {
 	for k, v := range s.used {
 		if !v {
-			return net.ParseIP(k)
+			return net.ParseIP(k), nil
 		}
 	}
-	return nil
+	return nil, nil
 }
 
 // GetLastAddress finds the last used ip address
-func (s *testStorageImpl) GetLastAddress() net.IP {
-	return s.last
+func (s *testStorageImpl) GetLastAddress() (net.IP, error) {
+	return s.last, nil
 }
 
 // SetAddressWithMAC sets record with ip address and MAC address
-func (s *testStorageImpl) SetAddressWithMAC(ip net.IP, mac net.HardwareAddr) {
+func (s *testStorageImpl) SetAddressWithMAC(ip net.IP, mac net.HardwareAddr) error {
 	s.m[mac.String()] = ip.String()
 	s.used[ip.String()] = true
 	s.last = ip
+	return nil
 }
 
 // ReleaseAddress release the address
@@ -84,13 +85,13 @@ func (s *testStorageImpl) ReleaseAddress(ip net.IP) error {
 }
 
 // IsUsed judge the ip address is used or not
-func (s *testStorageImpl) IsUsed(ip net.IP) bool {
+func (s *testStorageImpl) IsUsed(ip net.IP) (bool, error) {
 	var r, ok bool
 	r, ok = s.used[ip.String()]
 	if ok {
-		return r
+		return r, nil
 	}
-	return false
+	return false, nil
 }
 
 func TestDhcpClient(t *testing.T) {

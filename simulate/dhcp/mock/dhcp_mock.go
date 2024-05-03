@@ -35,11 +35,12 @@ func (m *MockStorage) EXPECT() *MockStorageMockRecorder {
 }
 
 // GetAddressWithMAC mocks base method.
-func (m *MockStorage) GetAddressWithMAC(arg0 net.HardwareAddr) net.IP {
+func (m *MockStorage) GetAddressWithMAC(arg0 net.HardwareAddr) (net.IP, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAddressWithMAC", arg0)
 	ret0, _ := ret[0].(net.IP)
-	return ret0
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // GetAddressWithMAC indicates an expected call of GetAddressWithMAC.
@@ -49,11 +50,12 @@ func (mr *MockStorageMockRecorder) GetAddressWithMAC(arg0 interface{}) *gomock.C
 }
 
 // GetLastAddress mocks base method.
-func (m *MockStorage) GetLastAddress() net.IP {
+func (m *MockStorage) GetLastAddress() (net.IP, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetLastAddress")
 	ret0, _ := ret[0].(net.IP)
-	return ret0
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // GetLastAddress indicates an expected call of GetLastAddress.
@@ -63,17 +65,33 @@ func (mr *MockStorageMockRecorder) GetLastAddress() *gomock.Call {
 }
 
 // GetOneUnusedAddress mocks base method.
-func (m *MockStorage) GetOneUnusedAddress() net.IP {
+func (m *MockStorage) GetOneUnusedAddress() (net.IP, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetOneUnusedAddress")
 	ret0, _ := ret[0].(net.IP)
-	return ret0
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // GetOneUnusedAddress indicates an expected call of GetOneUnusedAddress.
 func (mr *MockStorageMockRecorder) GetOneUnusedAddress() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOneUnusedAddress", reflect.TypeOf((*MockStorage)(nil).GetOneUnusedAddress))
+}
+
+// IsUsed mocks base method.
+func (m *MockStorage) IsUsed(arg0 net.IP) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "IsUsed", arg0)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// IsUsed indicates an expected call of IsUsed.
+func (mr *MockStorageMockRecorder) IsUsed(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsUsed", reflect.TypeOf((*MockStorage)(nil).IsUsed), arg0)
 }
 
 // ReleaseAddress mocks base method.
@@ -91,9 +109,11 @@ func (mr *MockStorageMockRecorder) ReleaseAddress(arg0 interface{}) *gomock.Call
 }
 
 // SetAddressWithMAC mocks base method.
-func (m *MockStorage) SetAddressWithMAC(arg0 net.IP, arg1 net.HardwareAddr) {
+func (m *MockStorage) SetAddressWithMAC(arg0 net.IP, arg1 net.HardwareAddr) error {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "SetAddressWithMAC", arg0, arg1)
+	ret := m.ctrl.Call(m, "SetAddressWithMAC", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // SetAddressWithMAC indicates an expected call of SetAddressWithMAC.

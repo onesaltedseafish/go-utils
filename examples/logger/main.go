@@ -15,8 +15,8 @@ var (
 )
 
 var (
-	logOpt          = log.CommonLogOpt.WithDirectory("/tmp/1234").WithTraceIDEnable(false).WithLogLevel(zapcore.DebugLevel)
-	noConsoleLogOpt = log.CommonLogOpt.WithDirectory("/tmp/1234").WithTraceIDEnable(false).
+	logOpt          = log.CommonLogOpt.WithDirectory(".").WithTraceIDEnable(false).WithLogLevel(zapcore.DebugLevel)
+	noConsoleLogOpt = log.CommonLogOpt.WithDirectory(".").WithTraceIDEnable(false).
 			WithLogLevel(zapcore.DebugLevel).
 			WithConsoleLog(false)
 )

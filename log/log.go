@@ -29,20 +29,22 @@ var (
 		MaxAge:           365,
 		IsDefault:        true,
 		ConsoleLogEnable: true,
+		EnableCaller:     true,
 	}
 
 	// CommonLogOpt use to easliy construct custom log options
 	CommonLogOpt = defaultLogOpt
 
 	logJsonEncodeCfg = zapcore.EncoderConfig{
-		MessageKey:   "msg",                          // default msg key
-		LevelKey:     "level",                        // log level key
-		CallerKey:    "caller",                       // caller key
-		TimeKey:      "time",                         // log time key
-		LineEnding:   zapcore.DefaultLineEnding,      // log ends with "\n"
-		EncodeLevel:  zapcore.LowercaseLevelEncoder,  // log level format "info"
-		EncodeTime:   zapcore.RFC3339NanoTimeEncoder, // log time format
-		EncodeCaller: zapcore.FullCallerEncoder,      // Full caller path
+		MessageKey:    "msg",                          // default msg key
+		LevelKey:      "level",                        // log level key
+		CallerKey:     "caller",                       // caller key
+		TimeKey:       "time",                         // log time key
+		StacktraceKey: "stack",                        // stack trace key
+		LineEnding:    zapcore.DefaultLineEnding,      // log ends with "\n"
+		EncodeLevel:   zapcore.LowercaseLevelEncoder,  // log level format "info"
+		EncodeTime:    zapcore.RFC3339NanoTimeEncoder, // log time format
+		EncodeCaller:  zapcore.FullCallerEncoder,      // Full caller path
 	}
 
 	logConsoleEncodeCfg = zapcore.EncoderConfig{
@@ -50,6 +52,7 @@ var (
 		LevelKey:     "level",                          // log level key
 		CallerKey:    "caller",                         // caller key
 		TimeKey:      "time",                           // log time key
+		StacktraceKey: "stack",                        // stack trace key
 		LineEnding:   zapcore.DefaultLineEnding,        // log ends with "\n"
 		EncodeLevel:  zapcore.CapitalColorLevelEncoder, // log Level with colors
 		EncodeTime:   zapcore.RFC3339TimeEncoder,       // not precise time
@@ -71,6 +74,7 @@ func newZapLogger(opt *LoggerOpt) *zap.Logger {
 	})
 
 	cores := make([]zapcore.Core, 0)
+	opts := make([]zap.Option, 0)
 
 	jsonCore := zapcore.NewCore(zapcore.NewJSONEncoder(logJsonEncodeCfg), w, zap.DebugLevel)
 	consoleCore := zapcore.NewCore(zapcore.NewConsoleEncoder(logConsoleEncodeCfg), zapcore.Lock(os.Stdout), zap.DebugLevel)
@@ -80,10 +84,17 @@ func newZapLogger(opt *LoggerOpt) *zap.Logger {
 		cores = append(cores, consoleCore)
 	}
 
+	opts = append(opts, zap.AddStacktrace(zap.ErrorLevel))
+	if opt.EnableCaller {
+		opts = append(opts, zap.AddCallerSkip(2))
+		opts = append(opts, zap.AddCaller())
+	}
+
 	return zap.New(
 		zapcore.NewTee(
 			cores...,
 		),
+		opts...,
 	)
 }
 
@@ -141,6 +152,7 @@ type LoggerOpt struct {
 	MaxAge           int    // The days the log will be kept
 	IsDefault        bool   // is defalut logger?
 	ConsoleLogEnable bool   // enable console log?
+	EnableCaller     bool   // enable Caller?
 }
 
 // GetLogFilePath get log dst file path
@@ -193,6 +205,12 @@ func (opt LoggerOpt) WithLogLevel(level zapcore.Level) LoggerOpt {
 // WithConsoleLog enable console log
 func (opt LoggerOpt) WithConsoleLog(enable bool) LoggerOpt {
 	opt.ConsoleLogEnable = enable
+	return opt
+}
+
+// WithCaller enable caller info
+func (opt LoggerOpt) WithCaller(enable bool) LoggerOpt {
+	opt.EnableCaller = enable
 	return opt
 }
 

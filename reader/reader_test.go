@@ -9,17 +9,30 @@ import (
 func TestReadCsv(t *testing.T) {
 	testcases := []struct {
 		Path         string
-		IgnoreHeader bool
+		Async        bool
 		WantContents [][]string
 	}{
 		{"tests/1.csv", false, [][]string{{"1", "2"}, {"3", "4"}, {"5", "6"}}},
 		{"tests/1.1.csv", false, [][]string{{"1", "2"}, {"3", "4"}, {"5", "6"}}},
+		{"tests/1.csv", true, [][]string{{"1", "2"}, {"3", "4"}, {"5", "6"}}},
+		{"tests/1.1.csv", true, [][]string{{"1", "2"}, {"3", "4"}, {"5", "6"}}},
 	}
 
 	for _, testcase := range testcases {
-		r, err := ReadCsvFile(testcase.Path, testcase.IgnoreHeader)
+
+		reader, err := NewCsvImpl(testcase.Path)
+		var contents [][]string
 		assert.Equal(t, nil, err)
-		assert.Equal(t, testcase.WantContents, r)
+		if testcase.Async {
+			readChan, _ := reader.ReadAysnc(1)
+			for c := range readChan {
+				contents = append(contents, c)
+			}
+		} else {
+			contents, err = reader.ReadAll()
+			assert.Equal(t, nil, err)
+		}
+		assert.Equal(t, testcase.WantContents, contents)
 	}
 }
 

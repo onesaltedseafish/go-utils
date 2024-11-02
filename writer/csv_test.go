@@ -14,7 +14,7 @@ func TestCsvWriter(t *testing.T) {
 		path, []string{"a", "b"},
 	)
 	assert.Equal(t, nil, err)
-	csvWriter.WriteHeader()
+	_ = csvWriter.WriteHeader()
 	err = csvWriter.checkLine([]string{"1", "2"})
 	assert.Equal(t, nil, err)
 	err = csvWriter.checkLine([]string{"1"})
@@ -29,7 +29,9 @@ func TestCsvWriter(t *testing.T) {
 	err = csvWriter.WriteLines([][]string{{"3", "4"}, {"5", "6"}})
 	assert.Equal(t, nil, err)
 
-	contents, err := reader.ReadCsvFile(path, false)
+	reader, err := reader.NewCsvImpl(path)
+	assert.Equal(t, nil, err)
+	contents, err := reader.ReadAll()
 	assert.Equal(t, nil, err)
 	assert.Equal(t, contents, [][]string{
 		{"a", "b"},

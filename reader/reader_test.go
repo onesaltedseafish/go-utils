@@ -27,16 +27,30 @@ func TestReadPlainText(t *testing.T) {
 	testcases := []struct {
 		Path         string
 		Sep          string
-		IgnoreHeader bool
+		IgnoreNRows  int
+		Async        bool
 		WantContents [][]string
 	}{
-		{"tests/1.txt", "\t", false, [][]string{{"1", "2"}, {"3", "4"}, {"5", "6"}}},
-		{"tests/1.1.txt", "\t", false, [][]string{{"1", "2"}, {"3", "4"}, {"5", "6"}}},
+		{"tests/1.txt", "\t", 0, false, [][]string{{"1", "2"}, {"3", "4"}, {"5", "6"}}},
+		{"tests/1.1.txt", "\t", 1, false, [][]string{{"3", "4"}, {"5", "6"}}},
+		{"tests/1.txt", "\t", 0, true, [][]string{{"1", "2"}, {"3", "4"}, {"5", "6"}}},
+		{"tests/1.1.txt", "\t", 1, true, [][]string{{"3", "4"}, {"5", "6"}}},
 	}
 
 	for _, testcase := range testcases {
-		r, err := ReadPlainTextFile(testcase.Path, testcase.Sep, testcase.IgnoreHeader)
+		reader, err := NewPlainTextFileImpl(testcase.Path, testcase.Sep, testcase.IgnoreNRows)
 		assert.Equal(t, nil, err)
-		assert.Equal(t, testcase.WantContents, r)
+		if testcase.Async {
+			var result [][]string
+			readChan, _ := reader.ReadAysnc(1)
+			for c := range readChan {
+				result = append(result, c)
+			}
+			assert.Equal(t, testcase.WantContents, result)
+		} else {
+			contents, err := reader.ReadAll()
+			assert.Equal(t, nil, err)
+			assert.Equal(t, testcase.WantContents, contents)
+		}
 	}
 }

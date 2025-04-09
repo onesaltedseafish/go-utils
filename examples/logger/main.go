@@ -11,7 +11,7 @@ import (
 
 var (
 	ctx        = context.Background()
-	traceIDCtx = log.NewTraceIdWithCtx(ctx)
+	traceIDCtx = log.NewTraceIDWithCtx(ctx)
 )
 
 var (

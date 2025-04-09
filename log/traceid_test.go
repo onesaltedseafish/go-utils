@@ -17,13 +17,13 @@ func TestTraceID(t *testing.T) {
 	}
 
 	for _, testcase := range testcases {
-		assert.Equal(t, testcase.Want, GetTraceIdWithCtx(testcase.ctx))
+		assert.Equal(t, testcase.Want, GetTraceIDWithCtx(testcase.ctx))
 	}
 }
 
 func TestNewTraceIDCtx(t *testing.T) {
-	ctx := NewTraceIdWithCtx(context.Background())
-	if GetTraceIdWithCtx(ctx) == "" {
+	ctx := NewTraceIDWithCtx(context.Background())
+	if GetTraceIDWithCtx(ctx) == "" {
 		t.Errorf("NewTraceIdWithCtx didn't generate traceid")
 	}
 }

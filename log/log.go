@@ -268,7 +268,7 @@ func (l *Logger) log(
 	}
 	var dst []zapcore.Field
 	if l.opt.TraceIDEnable {
-		dst = append(dst, zap.String("traceid", GetTraceIdWithCtx(ctx)))
+		dst = append(dst, zap.String("trace_id", GetTraceIDWithCtx(ctx)))
 	}
 	// add remaining fields
 	dst = append(dst, fields...)

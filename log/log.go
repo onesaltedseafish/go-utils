@@ -293,3 +293,30 @@ func NewFromLogger(logger *Logger) *Logger {
 		opt:    logger.opt,
 	}
 }
+
+// global default logger func
+
+// DebugContext default debug
+func DebugContext(ctx context.Context, msg string, fields ...zapcore.Field) {
+	GetDefaultLogger().Debug(ctx, msg, fields...)
+}
+
+// InfoContext default info
+func InfoContext(ctx context.Context, msg string, fields ...zapcore.Field) {
+	GetDefaultLogger().Info(ctx, msg, fields...)
+}
+
+// WarnContext default warn
+func WarnContext(ctx context.Context, msg string, fields ...zapcore.Field) {
+	GetDefaultLogger().Warn(ctx, msg, fields...)
+}
+
+// ErrorContext default error
+func ErrorContext(ctx context.Context, msg string, fields ...zapcore.Field) {
+	GetDefaultLogger().Error(ctx, msg, fields...)
+}
+
+// FatalContext default fatal
+func FatalContext(ctx context.Context, msg string, fields ...zapcore.Field) {
+	GetDefaultLogger().Fatal(ctx, msg, fields...)
+}

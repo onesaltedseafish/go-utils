@@ -9,6 +9,8 @@ import (
 	"sync"
 
 	"github.com/natefinch/lumberjack"
+	"go.opentelemetry.io/contrib/bridges/otelzap"
+	otellog "go.opentelemetry.io/otel/sdk/log"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -30,6 +32,7 @@ var (
 		IsDefault:        true,
 		ConsoleLogEnable: true,
 		EnableCaller:     true,
+		LoggerProvider:   nil,
 	}
 
 	// CommonLogOpt use to easliy construct custom log options
@@ -48,15 +51,15 @@ var (
 	}
 
 	logConsoleEncodeCfg = zapcore.EncoderConfig{
-		MessageKey:   "msg",                            // default msg key
-		LevelKey:     "level",                          // log level key
-		CallerKey:    "caller",                         // caller key
-		TimeKey:      "time",                           // log time key
-		StacktraceKey: "stack",                        // stack trace key
-		LineEnding:   zapcore.DefaultLineEnding,        // log ends with "\n"
-		EncodeLevel:  zapcore.CapitalColorLevelEncoder, // log Level with colors
-		EncodeTime:   zapcore.RFC3339TimeEncoder,       // not precise time
-		EncodeCaller: zapcore.ShortCallerEncoder,       // short caller path
+		MessageKey:    "msg",                            // default msg key
+		LevelKey:      "level",                          // log level key
+		CallerKey:     "caller",                         // caller key
+		TimeKey:       "time",                           // log time key
+		StacktraceKey: "stack",                          // stack trace key
+		LineEnding:    zapcore.DefaultLineEnding,        // log ends with "\n"
+		EncodeLevel:   zapcore.CapitalColorLevelEncoder, // log Level with colors
+		EncodeTime:    zapcore.RFC3339TimeEncoder,       // not precise time
+		EncodeCaller:  zapcore.ShortCallerEncoder,       // short caller path
 	}
 )
 
@@ -82,6 +85,14 @@ func newZapLogger(opt *LoggerOpt) *zap.Logger {
 	cores = append(cores, jsonCore)
 	if opt.ConsoleLogEnable {
 		cores = append(cores, consoleCore)
+	}
+
+	if opt.LoggerProvider != nil { // support OTLP
+		otelzapCore := otelzap.NewCore(
+			opt.Name,
+			otelzap.WithLoggerProvider(opt.LoggerProvider),
+		)
+		cores = append(cores, otelzapCore)
 	}
 
 	opts = append(opts, zap.AddStacktrace(zap.ErrorLevel))
@@ -144,15 +155,16 @@ type Logger struct {
 // LoggerOpt configures the logger
 type LoggerOpt struct {
 	LogLevel         zapcore.Level
-	Directory        string // log file directory
-	Name             string // log file name
-	TraceIDEnable    bool   // enable traceid field
-	MaxSize          int    // Log File Max Size MB
-	MaxBackups       int    // The number of backup log file
-	MaxAge           int    // The days the log will be kept
-	IsDefault        bool   // is defalut logger?
-	ConsoleLogEnable bool   // enable console log?
-	EnableCaller     bool   // enable Caller?
+	Directory        string                  // log file directory
+	Name             string                  // log file name
+	TraceIDEnable    bool                    // enable traceid field
+	MaxSize          int                     // Log File Max Size MB
+	MaxBackups       int                     // The number of backup log file
+	MaxAge           int                     // The days the log will be kept
+	IsDefault        bool                    // is defalut logger?
+	ConsoleLogEnable bool                    // enable console log?
+	EnableCaller     bool                    // enable Caller?
+	LoggerProvider   *otellog.LoggerProvider // when not nil, use otelzap bridge
 }
 
 // GetLogFilePath get log dst file path
@@ -211,6 +223,11 @@ func (opt LoggerOpt) WithConsoleLog(enable bool) LoggerOpt {
 // WithCaller enable caller info
 func (opt LoggerOpt) WithCaller(enable bool) LoggerOpt {
 	opt.EnableCaller = enable
+	return opt
+}
+
+func (opt LoggerOpt) WithOtelLoggerProvider(provider *otellog.LoggerProvider) LoggerOpt {
+	opt.LoggerProvider = provider
 	return opt
 }
 

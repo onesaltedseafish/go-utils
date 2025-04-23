@@ -1,8 +1,11 @@
-module github.com/onesaltedseafish/go-utils/reader
+module github.com/onesaltedseafish/go-utils/writer
 
-go 1.22.7
+go 1.24.2
 
-require github.com/stretchr/testify v1.10.0
+require (
+	github.com/onesaltedseafish/go-utils/reader v0.1.0
+	github.com/stretchr/testify v1.10.0
+)
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect

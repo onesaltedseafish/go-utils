@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 )
 
@@ -28,6 +29,17 @@ func NewRowCsvWriter(path string, header []string) (*RowCsvWriter, error) {
 		columnCnt: len(header),
 	}
 	return w, nil
+}
+
+// NewRowCsvWriterWithF new with io.writer
+func NewRowCsvWriterWithF(
+	writer io.Writer, header []string,
+) *RowCsvWriter {
+	return &RowCsvWriter{
+		Headers:   header,
+		columnCnt: len(header),
+		writer:    csv.NewWriter(writer),
+	}
 }
 
 // WriteLine write one line per time

@@ -1,6 +1,6 @@
 module github.com/onesaltedseafish/go-utils/writer
 
-go 1.24.2
+go 1.22.7
 
 require (
 	github.com/onesaltedseafish/go-utils/reader v0.1.0
